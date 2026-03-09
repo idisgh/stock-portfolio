@@ -44,7 +44,8 @@ export default defineEventHandler(async (event) => {
   // 세션 쿠키 발급
   setCookie(event, 'session', String(user.id), {
     httpOnly: true,
-    secure: false,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
     maxAge: 60 * 60 * 24 * 7,
     path: '/',
   })

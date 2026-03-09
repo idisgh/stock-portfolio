@@ -47,7 +47,8 @@ export default defineEventHandler(async (event) => {
   // 쿠키 = 브라우저에 저장되는 작은 데이터. 요청마다 자동으로 서버에 전송됨.
   setCookie(event, 'session', String(user.id), {
     httpOnly: true,   // JavaScript로 접근 불가 (XSS 방어)
-    secure: false,    // 개발환경이라 false (프로덕션에선 true)
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
     maxAge: 60 * 60 * 24 * 7,  // 7일 유지
     path: '/',
   })
