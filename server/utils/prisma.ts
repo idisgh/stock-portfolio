@@ -1,10 +1,10 @@
 // server/utils/prisma.ts
 // =====================
-// Prisma 7에서는 "어댑터" 패턴을 씀.
-// 어댑터 = DB 드라이버를 Prisma에 연결해주는 중간 다리
-// SQLite를 쓰니까 better-sqlite3 어댑터 사용.
+// Prisma 7 어댑터 패턴: Neon (서버리스 PostgreSQL) 사용
+// Vercel 서버리스 환경에서도 WebSocket으로 DB 연결 가능
 
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
+import { PrismaPg } from '@prisma/adapter-pg-worker'
+import { Pool } from '@neondatabase/serverless'
 import { PrismaClient } from '../../generated/prisma/client.js'
 
 const globalForPrisma = globalThis as unknown as {
@@ -12,9 +12,8 @@ const globalForPrisma = globalThis as unknown as {
 }
 
 function createPrismaClient() {
-  const adapter = new PrismaBetterSqlite3({
-    url: process.env.DATABASE_URL || 'file:./prisma/dev.db'
-  })
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+  const adapter = new PrismaPg(pool)
   return new PrismaClient({ adapter })
 }
 

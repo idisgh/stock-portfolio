@@ -10,9 +10,9 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@prisma/adapter-better-sqlite3": "^7.4.2",
+    "@neondatabase/serverless": "^1.0.2",
+    "@prisma/adapter-pg-worker": "^6.9.0",
     "@prisma/client": "^7.4.2",
-    "@types/better-sqlite3": "^7.6.13",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.3.1",
     "lightweight-charts": "^5.1.0",
@@ -28,7 +28,6 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "better-sqlite3",
       "prisma",
       "@prisma/engines"
     ]
