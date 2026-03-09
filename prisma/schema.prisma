@@ -1,0 +1,47 @@
+// prisma/schema.prisma
+// =====================
+// 이 파일이 DB 설계도야.
+// "모델"을 정의하면 → Prisma가 실제 DB 테이블로 만들어줌.
+
+// generator: Prisma Client를 생성하는 설정
+// Prisma 7부터는 "prisma-client" 제너레이터 + output 경로 필요
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ============================================
+// User 테이블 - 로그인할 사용자 정보
+// ============================================
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+
+  stocks    Stock[]  // 이 유저가 가진 종목들 (1:N 관계)
+}
+
+// ============================================
+// Stock 테이블 - 사용자의 보유 종목
+// ============================================
+model Stock {
+  id        Int      @id @default(autoincrement())
+  ticker    String                    // 종목 코드 (AAPL, 005930.KS)
+  name      String                    // 종목 이름
+  buyPrice  Float                     // 매수 단가
+  quantity  Int                       // 수량
+  buyDate   DateTime                  // 매수일
+  platform  String?                   // 매수 플랫폼 (키움, 토스, 미래에셋 등)
+  memo      String?                   // 메모 (선택)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
