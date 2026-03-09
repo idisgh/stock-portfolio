@@ -5,7 +5,7 @@
 
 import { PrismaPg } from '@prisma/adapter-pg-worker'
 import { Pool } from '@neondatabase/serverless'
-import { PrismaClient } from '../../generated/prisma/client.js'
+import { PrismaClient } from '~~/generated/prisma/client.js'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
