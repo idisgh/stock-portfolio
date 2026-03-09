@@ -1,7 +1,9 @@
 <template>
   <div class="min-h-screen bg-gray-900 text-white">
     <header class="border-b border-gray-800 px-6 py-4 flex items-center gap-4">
-      <button @click="navigateTo('/')" class="text-gray-400 hover:text-white transition">← 뒤로</button>
+      <button @click="navigateTo('/')" class="flex items-center gap-1 text-gray-400 hover:text-white transition">
+        <ArrowLeft :size="16" /> 뒤로
+      </button>
       <h1 class="text-xl font-bold" v-if="stock">{{ stock.name }} ({{ stock.ticker }})</h1>
     </header>
 
@@ -60,8 +62,8 @@
             <div class="font-mono mt-1">{{ new Date(stock.buyDate).toLocaleDateString('ko-KR') }}</div>
           </div>
         </div>
-        <div v-if="stock.memo" class="mt-3 text-gray-400 text-sm">
-          📝 {{ stock.memo }}
+        <div v-if="stock.memo" class="mt-3 text-gray-400 text-sm flex items-center gap-1">
+          <StickyNote :size="14" /> {{ stock.memo }}
         </div>
       </div>
 
@@ -84,6 +86,8 @@
 </template>
 
 <script setup lang="ts">
+import { ArrowLeft, StickyNote } from 'lucide-vue-next'
+
 const { user } = useAuth()
 watchEffect(() => { if (!user.value) navigateTo('/login') })
 

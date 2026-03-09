@@ -2,10 +2,16 @@
   <div class="min-h-screen bg-gray-900 text-white">
     <!-- 헤더 -->
     <header class="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
-      <h1 class="text-xl font-bold">Stock Portfolio</h1>
+      <h1 class="text-xl font-bold flex items-center gap-2">
+        <TrendingUp :size="22" class="text-blue-400" />
+        Stock Portfolio
+      </h1>
       <div class="flex items-center gap-4">
         <span class="text-gray-400 text-sm">{{ user?.name }}</span>
-        <button @click="logout()" class="text-sm text-gray-400 hover:text-white transition">로그아웃</button>
+        <button @click="logout()" class="flex items-center gap-1 text-sm text-gray-400 hover:text-white transition">
+          <LogOut :size="14" />
+          로그아웃
+        </button>
       </div>
     </header>
 
@@ -42,7 +48,9 @@
         <div v-if="form.ticker" class="flex items-center gap-3 mb-3 px-3 py-2 bg-gray-700 rounded-lg">
           <span class="font-medium text-sm">{{ form.ticker }}</span>
           <span class="text-gray-400 text-sm">{{ form.name }}</span>
-          <button @click="clearSelection" class="ml-auto text-gray-500 hover:text-red-400 text-xs">✕ 변경</button>
+          <button @click="clearSelection" class="ml-auto flex items-center gap-1 text-gray-500 hover:text-red-400 text-xs">
+            <X :size="12" /> 변경
+          </button>
         </div>
 
         <!-- 종목 검색 (선택 전) -->
@@ -77,8 +85,9 @@
           <div class="flex items-center gap-3">
             <span class="text-gray-400 text-sm">{{ stocks?.length || 0 }}개</span>
             <button @click="refreshAll" :disabled="quotesLoading"
-              class="text-xs px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
-              {{ quotesLoading ? '조회 중...' : '🔄 시세 갱신' }}
+              class="flex items-center gap-1 text-xs px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
+              <RefreshCw :size="13" :class="quotesLoading ? 'animate-spin' : ''" />
+              {{ quotesLoading ? '조회 중...' : '시세 갱신' }}
             </button>
           </div>
         </div>
@@ -92,7 +101,7 @@
         <!-- 미장 (USD) -->
         <template v-if="usStocks.length">
           <div class="px-6 pt-4 pb-2 text-xs text-gray-500 font-semibold tracking-wider border-b border-gray-700/50">
-            🇺🇸 미장
+            <span class="inline-flex items-center gap-1"><span class="text-xs px-1.5 py-0.5 bg-red-900/50 text-red-300 rounded">US</span> 미장</span>
           </div>
           <table class="w-full table-fixed">
             <colgroup>
@@ -186,7 +195,7 @@
                 </td>
                 <td class="text-center px-2 py-3">
                   <button @click="deleteStock(stock.id)"
-                    class="text-gray-600 hover:text-red-400 text-xs transition opacity-0 group-hover:opacity-100">✕</button>
+                    class="text-gray-600 hover:text-red-400 transition opacity-0 group-hover:opacity-100"><X :size="14" /></button>
                 </td>
               </tr>
             </tbody>
@@ -196,7 +205,7 @@
         <!-- 국장 (KRW) -->
         <template v-if="krStocks.length">
           <div class="px-6 pt-4 pb-2 text-xs text-gray-500 font-semibold tracking-wider border-b border-gray-700/50">
-            🇰🇷 국장
+            <span class="inline-flex items-center gap-1"><span class="text-xs px-1.5 py-0.5 bg-blue-900/50 text-blue-300 rounded">KR</span> 국장</span>
           </div>
           <table class="w-full table-fixed">
             <colgroup>
@@ -285,7 +294,7 @@
                 </td>
                 <td class="text-center px-2 py-3">
                   <button @click="deleteStock(stock.id)"
-                    class="text-gray-600 hover:text-red-400 text-xs transition opacity-0 group-hover:opacity-100">✕</button>
+                    class="text-gray-600 hover:text-red-400 transition opacity-0 group-hover:opacity-100"><X :size="14" /></button>
                 </td>
               </tr>
             </tbody>
@@ -297,6 +306,8 @@
 </template>
 
 <script setup lang="ts">
+import { TrendingUp, RefreshCw, X, LogOut } from 'lucide-vue-next'
+
 const { user, logout } = useAuth()
 watchEffect(() => { if (!user.value) navigateTo('/login') })
 

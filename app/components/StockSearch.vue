@@ -29,9 +29,9 @@
           <span class="font-medium text-sm text-white">{{ item.ticker }}</span>
           <span class="text-gray-400 text-xs ml-2">{{ item.name }}</span>
         </div>
-        <span class="text-xs px-1.5 py-0.5 rounded"
-          :class="item.type === 'KR' ? 'bg-blue-900 text-blue-300' : 'bg-red-900 text-red-300'">
-          {{ item.type === 'KR' ? '🇰🇷' : '🇺🇸' }}
+        <span class="text-xs px-1.5 py-0.5 rounded font-medium"
+          :class="item.type === 'KR' ? 'bg-blue-900/50 text-blue-300' : 'bg-red-900/50 text-red-300'">
+          {{ item.type === 'KR' ? 'KR' : 'US' }}
         </span>
       </div>
     </div>
