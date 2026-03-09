@@ -8,10 +8,7 @@ importers:
 
   .:
     dependencies:
-      '@neondatabase/serverless':
-        specifier: ^1.0.2
-        version: 1.0.2
-      '@prisma/adapter-neon':
+      '@prisma/adapter-pg':
         specifier: ^7.4.2
         version: 7.4.2
       '@prisma/client':
@@ -29,6 +26,9 @@ importers:
       nuxt:
         specifier: ^4.3.1
         version: 4.3.1(@electric-sql/pglite@0.3.15)(@parcel/watcher@2.5.6)(@types/node@25.3.5)(@vue/compiler-sfc@3.5.30)(better-sqlite3@12.6.2)(cac@6.7.14)(db0@0.3.4(@electric-sql/pglite@0.3.15)(better-sqlite3@12.6.2)(mysql2@3.15.3))(ioredis@5.10.0)(magicast@0.5.2)(mysql2@3.15.3)(rollup@4.59.0)(terser@5.46.0)(vite@7.3.1(@types/node@25.3.5)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.2))(yaml@2.8.2)
+      pg:
+        specifier: ^8.20.0
+        version: 8.20.0
       vue:
         specifier: ^3.5.29
         version: 3.5.30
@@ -45,6 +45,9 @@ importers:
       '@types/bcryptjs':
         specifier: ^3.0.0
         version: 3.0.0
+      '@types/pg':
+        specifier: ^8.18.0
+        version: 8.18.0
       prisma:
         specifier: ^7.4.2
         version: 7.4.2(@types/react@19.2.14)(better-sqlite3@12.6.2)(magicast@0.5.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -470,10 +473,6 @@ packages:
 
   '@napi-rs/wasm-runtime@1.1.1':
     resolution: {integrity: sha512-p64ah1M1ld8xjWv3qbvFwHiFVWrq1yFvV4f7w+mzaqiR4IlSgkqhcRdHwsGgomwzBH51sRY4NEowLxnaBjcW/A==}
-
-  '@neondatabase/serverless@1.0.2':
-    resolution: {integrity: sha512-I5sbpSIAHiB+b6UttofhrN/UJXII+4tZPAq1qugzwCwLIL8EZLV7F/JyHUrEIiGgQpEXzpnjlJ+zwcEhheGvCw==}
-    engines: {node: '>=19.0.0'}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1022,8 +1021,8 @@ packages:
   '@poppinss/exception@1.2.3':
     resolution: {integrity: sha512-dCED+QRChTVatE9ibtoaxc+WkdzOSjYTKi/+uacHWIsfodVfpsueo3+DKpgU5Px8qXjgmXkSvhXvSCz3fnP9lw==}
 
-  '@prisma/adapter-neon@7.4.2':
-    resolution: {integrity: sha512-uN4s/yGD3k6pIdSaS08IDCNIzbff8Hols3DYrK7Dv1509/w7JRD8eMv3fcq6VZ+GvKLKnNkZiQyBLqLJlY6zqw==}
+  '@prisma/adapter-pg@7.4.2':
+    resolution: {integrity: sha512-oUo2Zhe9Tf6YwVL8kLPuOLTK1Z2pwi/Ua77t2PuGyBan2w7shRKqHvYK+3XXmRH9RWhPJ4SMtHZKpNo6Ax/4bQ==}
 
   '@prisma/client-runtime-utils@7.4.2':
     resolution: {integrity: sha512-cID+rzOEb38VyMsx5LwJMEY4NGIrWCNpKu/0ImbeooQ2Px7TI+kOt7cm0NelxUzF2V41UVVXAmYjANZQtCu1/Q==}
@@ -1306,9 +1305,6 @@ packages:
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
-
-  '@types/node@22.19.15':
-    resolution: {integrity: sha512-F0R/h2+dsy5wJAUe3tAU6oqa2qbWY5TpNfL/RGmo1y38hiyO1w3x2jPtt76wmuaJI4DQnOBu21cNXQ2STIUUWg==}
 
   '@types/node@25.3.5':
     resolution: {integrity: sha512-oX8xrhvpiyRCQkG1MFchB09f+cXftgIXb3a7UUa4Y3wpmZPw5tyZGTLWhlESOLq1Rq6oDlc8npVU2/9xiCuXMA==}
@@ -3000,9 +2996,20 @@ packages:
   perfect-debounce@2.1.0:
     resolution: {integrity: sha512-LjgdTytVFXeUgtHZr9WYViYSM/g8MkcTPYDlPa3cDqMirHjKiSZPYd6DoL7pK8AJQr+uWkQvCjHNdiMqsrJs+g==}
 
+  pg-cloudflare@1.3.0:
+    resolution: {integrity: sha512-6lswVVSztmHiRtD6I8hw4qP/nDm1EJbKMRhf3HCYaqud7frGysPv7FYJ5noZQdhQtN2xJnimfMtvQq21pdbzyQ==}
+
+  pg-connection-string@2.12.0:
+    resolution: {integrity: sha512-U7qg+bpswf3Cs5xLzRqbXbQl85ng0mfSV/J0nnA31MCLgvEaAo7CIhmeyrmJpOr7o+zm0rXK+hNnT5l9RHkCkQ==}
+
   pg-int8@1.0.1:
     resolution: {integrity: sha512-WCtabS6t3c8SkpDBUlb1kjOs7l66xsGdKpIPZsg4wR+B3+u9UAum2odSsF9tnvxg80h4ZxLWMy4pRjOsFIqQpw==}
     engines: {node: '>=4.0.0'}
+
+  pg-pool@3.13.0:
+    resolution: {integrity: sha512-gB+R+Xud1gLFuRD/QgOIgGOBE2KCQPaPwkzBBGC9oG69pHTkhQeIuejVIk3/cnDyX39av2AxomQiyPT13WKHQA==}
+    peerDependencies:
+      pg: '>=8.0'
 
   pg-protocol@1.13.0:
     resolution: {integrity: sha512-zzdvXfS6v89r6v7OcFCHfHlyG/wvry1ALxZo4LqgUoy7W9xhBDMaqOuMiF3qEV45VqsN6rdlcehHrfDtlCPc8w==}
@@ -3010,6 +3017,18 @@ packages:
   pg-types@2.2.0:
     resolution: {integrity: sha512-qTAAlrEsl8s4OiEQY69wDvcMIdQN6wdz5ojQiOy6YRMuynxenON0O5oCpJI6lshc6scgAY8qvJ2On/p+CXY0GA==}
     engines: {node: '>=4'}
+
+  pg@8.20.0:
+    resolution: {integrity: sha512-ldhMxz2r8fl/6QkXnBD3CR9/xg694oT6DZQ2s6c/RI28OjtSOpxnPrUCGOBJ46RCUxcWdx3p6kw/xnDHjKvaRA==}
+    engines: {node: '>= 16.0.0'}
+    peerDependencies:
+      pg-native: '>=3.0.1'
+    peerDependenciesMeta:
+      pg-native:
+        optional: true
+
+  pgpass@1.0.5:
+    resolution: {integrity: sha512-FdW9r/jQZhSeohs1Z3sI1yxFQNFvMcnmfuj4WBMUTxOrAyLMaTcE1aAMBiTlbMNaXvBCQuVi0R7hd8udDSP7ug==}
 
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
@@ -3592,6 +3611,10 @@ packages:
     resolution: {integrity: sha512-i5uvt8C3ikiWeNZSVZNWcfZPItFQOsYTUAOkcUPGd8DqDy1uOUikjt5dG+uRlwyvR108Fb9DOd4GvXfT0N2/uQ==}
     engines: {node: '>= 12'}
 
+  split2@4.2.0:
+    resolution: {integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==}
+    engines: {node: '>= 10.x'}
+
   sqlstring@2.3.3:
     resolution: {integrity: sha512-qC9iz2FlN7DQl3+wjwn3802RTyjCx7sDvfQEXchwa6CWOx07/WVfh91gBmQ9fahw8snwGEWU3xGzOt4tFyHLxg==}
     engines: {node: '>= 0.6'}
@@ -3822,9 +3845,6 @@ packages:
 
   unctx@2.5.0:
     resolution: {integrity: sha512-p+Rz9x0R7X+CYDkT+Xg8/GhpcShTlU8n+cf9OtOEf7zEQsNcCZO1dPKNRDqvUTaq+P32PMMkxWHwfrxkqfqAYg==}
-
-  undici-types@6.21.0:
-    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
   undici-types@7.18.2:
     resolution: {integrity: sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==}
@@ -4627,11 +4647,6 @@ snapshots:
       '@tybys/wasm-util': 0.10.1
     optional: true
 
-  '@neondatabase/serverless@1.0.2':
-    dependencies:
-      '@types/node': 22.19.15
-      '@types/pg': 8.18.0
-
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
       '@nodelib/fs.stat': 2.0.5
@@ -5230,11 +5245,13 @@ snapshots:
 
   '@poppinss/exception@1.2.3': {}
 
-  '@prisma/adapter-neon@7.4.2':
+  '@prisma/adapter-pg@7.4.2':
     dependencies:
-      '@neondatabase/serverless': 1.0.2
       '@prisma/driver-adapter-utils': 7.4.2
+      pg: 8.20.0
       postgres-array: 3.0.4
+    transitivePeerDependencies:
+      - pg-native
 
   '@prisma/client-runtime-utils@7.4.2': {}
 
@@ -5474,10 +5491,6 @@ snapshots:
       bcryptjs: 3.0.3
 
   '@types/estree@1.0.8': {}
-
-  '@types/node@22.19.15':
-    dependencies:
-      undici-types: 6.21.0
 
   '@types/node@25.3.5':
     dependencies:
@@ -7481,7 +7494,16 @@ snapshots:
 
   perfect-debounce@2.1.0: {}
 
+  pg-cloudflare@1.3.0:
+    optional: true
+
+  pg-connection-string@2.12.0: {}
+
   pg-int8@1.0.1: {}
+
+  pg-pool@3.13.0(pg@8.20.0):
+    dependencies:
+      pg: 8.20.0
 
   pg-protocol@1.13.0: {}
 
@@ -7492,6 +7514,20 @@ snapshots:
       postgres-bytea: 1.0.1
       postgres-date: 1.0.7
       postgres-interval: 1.2.0
+
+  pg@8.20.0:
+    dependencies:
+      pg-connection-string: 2.12.0
+      pg-pool: 3.13.0(pg@8.20.0)
+      pg-protocol: 1.13.0
+      pg-types: 2.2.0
+      pgpass: 1.0.5
+    optionalDependencies:
+      pg-cloudflare: 1.3.0
+
+  pgpass@1.0.5:
+    dependencies:
+      split2: 4.2.0
 
   picocolors@1.1.1: {}
 
@@ -8076,6 +8112,8 @@ snapshots:
 
   source-map@0.7.6: {}
 
+  split2@4.2.0: {}
+
   sqlstring@2.3.3: {}
 
   srvx@0.11.9: {}
@@ -8363,8 +8401,6 @@ snapshots:
       estree-walker: 3.0.3
       magic-string: 0.30.21
       unplugin: 2.3.11
-
-  undici-types@6.21.0: {}
 
   undici-types@7.18.2: {}
 
