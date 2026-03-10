@@ -90,10 +90,6 @@ function triggerSearch() {
 
 async function fetchResults() {
   const q = searchQuery.value.trim()
-  if (!q) {
-    results.value = []
-    return
-  }
 
   loading.value = true
   try {
