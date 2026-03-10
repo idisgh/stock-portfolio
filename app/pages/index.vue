@@ -17,7 +17,7 @@
 
     <main class="max-w-6xl mx-auto p-6">
       <!-- 포트폴리오 요약 -->
-      <div v-if="stocks?.length" class="grid grid-cols-4 gap-4 mb-6">
+      <div v-if="stocks?.length" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-gray-800 rounded-xl p-4 text-right">
           <div class="text-gray-400 text-xs flex items-center justify-end gap-1">
             환율 <span class="text-gray-500">USD/KRW</span>
@@ -79,7 +79,7 @@
       </div>
 
       <!-- 종목 리스트 -->
-      <div class="bg-gray-800 rounded-xl overflow-hidden max-h-[70vh] overflow-y-auto">
+      <div class="bg-gray-800 rounded-xl overflow-hidden max-h-[70vh] overflow-y-auto overflow-x-auto">
         <div class="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
           <h2 class="text-lg font-semibold">보유 종목</h2>
           <div class="flex items-center gap-3">
@@ -103,7 +103,7 @@
           <div class="px-6 pt-4 pb-2 text-xs text-gray-500 font-semibold tracking-wider border-b border-gray-700/50">
             <span class="inline-flex items-center gap-1"><span class="text-xs px-1.5 py-0.5 bg-red-900/50 text-red-300 rounded">US</span> 미장</span>
           </div>
-          <table class="w-full table-fixed">
+          <table class="w-full table-fixed min-w-[720px]">
             <colgroup>
               <col style="width: 18%" /><!-- 종목 -->
               <col style="width: 8%" /> <!-- 주간 -->
@@ -207,7 +207,7 @@
           <div class="px-6 pt-4 pb-2 text-xs text-gray-500 font-semibold tracking-wider border-b border-gray-700/50">
             <span class="inline-flex items-center gap-1"><span class="text-xs px-1.5 py-0.5 bg-blue-900/50 text-blue-300 rounded">KR</span> 국장</span>
           </div>
-          <table class="w-full table-fixed">
+          <table class="w-full table-fixed min-w-[720px]">
             <colgroup>
               <col style="width: 18%" />
               <col style="width: 8%" />
@@ -424,7 +424,8 @@ async function saveEdit(stock: any) {
 }
 
 // 종목 추가
-const form = reactive({ ticker: '', name: '', buyPrice: '', quantity: '', buyDate: '', platform: '', memo: '' })
+const today = new Date().toISOString().slice(0, 10) // YYYY-MM-DD
+const form = reactive({ ticker: '', name: '', buyPrice: '', quantity: '', buyDate: today, platform: '', memo: '' })
 
 function onStockSelect(item: any) {
   form.ticker = item.ticker
