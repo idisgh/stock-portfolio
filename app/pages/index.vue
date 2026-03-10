@@ -162,8 +162,8 @@
                 </td>
                 <td class="text-center px-2 py-3">
                   <template v-if="editing?.id === stock.id && editing?.field === 'platform'">
-                    <input v-model="editing.value" placeholder="플랫폼"
-                      class="w-16 px-1 py-0.5 bg-gray-600 rounded text-xs text-center"
+                    <input v-model="editing.value" list="platform-list-inline" placeholder="플랫폼"
+                      class="w-20 px-1 py-0.5 bg-gray-600 rounded text-xs text-center"
                       @keyup.enter="saveEdit(stock)" @keyup.escape="cancelEdit" @blur="saveOrCancel(stock)" />
                   </template>
                   <span v-else class="text-gray-500 text-xs cursor-pointer hover:text-yellow-400"
@@ -263,8 +263,8 @@
                 </td>
                 <td class="text-center px-2 py-3">
                   <template v-if="editing?.id === stock.id && editing?.field === 'platform'">
-                    <input v-model="editing.value" placeholder="플랫폼"
-                      class="w-16 px-1 py-0.5 bg-gray-600 rounded text-xs text-center"
+                    <input v-model="editing.value" list="platform-list-inline" placeholder="플랫폼"
+                      class="w-20 px-1 py-0.5 bg-gray-600 rounded text-xs text-center"
                       @keyup.enter="saveEdit(stock)" @keyup.escape="cancelEdit" @blur="saveOrCancel(stock)" />
                   </template>
                   <span v-else class="text-gray-500 text-xs cursor-pointer hover:text-yellow-400"
@@ -505,6 +505,18 @@ function formatKRW(price: any) {
   return n.toLocaleString('ko-KR')
 }
 </script>
+
+<!-- 플랫폼 datalist (인라인 편집용) -->
+<datalist id="platform-list-inline">
+  <option>키움증권</option>
+  <option>토스증권</option>
+  <option>미래에셋</option>
+  <option>삼성증권</option>
+  <option>KB증권</option>
+  <option>신한투자</option>
+  <option>NH투자증권</option>
+  <option>Interactive Brokers</option>
+</datalist>
 
 <style scoped>
 .input-field {
