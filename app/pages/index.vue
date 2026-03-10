@@ -431,9 +431,15 @@ async function saveEdit(stock: any) {
 const today = new Date().toISOString().slice(0, 10) // YYYY-MM-DD
 const form = reactive({ ticker: '', name: '', buyPrice: '', quantity: '', buyDate: today, platform: '', memo: '' })
 
-function onStockSelect(item: any) {
+async function onStockSelect(item: any) {
   form.ticker = item.ticker
   form.name = item.name
+  form.buyPrice = ''
+  try {
+    const q = await $fetch(`/api/quotes?tickers=${item.ticker}`) as any
+    const price = q[item.ticker]?.currentPrice
+    if (price) form.buyPrice = String(price)
+  } catch {}
 }
 
 function clearSelection() {
