@@ -6,7 +6,7 @@
       @input="onNativeInput"
       @compositionstart="composing = true"
       @compositionend="onCompositionEnd"
-      @focus="showDropdown = true"
+      @focus="onFocus"
       @keydown.down.prevent="moveSelection(1)"
       @keydown.up.prevent="moveSelection(-1)"
       @keydown.enter.prevent="selectCurrent"
@@ -17,7 +17,7 @@
 
     <!-- 드롭다운 -->
     <div v-if="showDropdown && results.length"
-      class="absolute z-50 w-full mt-1 bg-gray-700 border border-gray-600 rounded-lg shadow-xl max-h-60 overflow-y-auto">
+      class="absolute z-50 w-full mt-1 bg-gray-700 border border-gray-600 rounded-lg shadow-xl max-h-72 overflow-y-auto">
       <div
         v-for="(item, i) in results"
         :key="item.ticker"
@@ -74,6 +74,11 @@ function onCompositionEnd(e: Event) {
   const val = (e.target as HTMLInputElement).value
   searchQuery.value = val
   triggerSearch()
+}
+
+function onFocus() {
+  showDropdown.value = true
+  if (!searchQuery.value) fetchResults()
 }
 
 function triggerSearch() {

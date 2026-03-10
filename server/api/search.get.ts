@@ -17,7 +17,10 @@ export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const q = String(query.q || '').trim()
 
-  if (!q || q.length < 1) return []
+  // 빈 쿼리 → 전체 한국 종목 노출 (최대 30개)
+  if (!q) {
+    return krStocks.slice(0, 30).map(s => ({ ticker: s.ticker, name: s.name, exchange: 'KRX', type: 'KR' }))
+  }
 
   // 한글이면 로컬 한국 종목에서 검색
   if (isKorean(q)) {
