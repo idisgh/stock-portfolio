@@ -526,18 +526,6 @@ function formatKRW(price: any) {
 }
 </script>
 
-<!-- 플랫폼 datalist (인라인 편집용) -->
-<datalist id="platform-list-inline">
-  <option>키움증권</option>
-  <option>토스증권</option>
-  <option>미래에셋</option>
-  <option>삼성증권</option>
-  <option>KB증권</option>
-  <option>신한투자</option>
-  <option>NH투자증권</option>
-  <option>Interactive Brokers</option>
-</datalist>
-
 <style scoped>
 .input-field {
   @apply px-3 py-2 bg-gray-700 rounded-lg border border-gray-600 focus:border-blue-500 focus:outline-none text-sm;
