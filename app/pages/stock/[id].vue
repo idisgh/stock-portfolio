@@ -70,6 +70,7 @@
       <!-- 차트 -->
       <div class="bg-gray-800 rounded-xl p-6">
         <h2 class="text-lg font-semibold mb-4">주가 차트</h2>
+        <div class="overflow-x-auto">
         <ClientOnly>
           <StockChart :ticker="stock.ticker" />
           <template #fallback>
@@ -78,6 +79,7 @@
             </div>
           </template>
         </ClientOnly>
+        </div>
       </div>
     </main>
 

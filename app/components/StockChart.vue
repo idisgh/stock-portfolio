@@ -14,7 +14,7 @@
     </div>
 
     <!-- 차트 영역 -->
-    <div ref="chartContainer" class="w-full rounded-lg overflow-hidden" style="height: 350px;"></div>
+    <div ref="chartContainer" class="rounded-lg overflow-hidden" style="height: 350px; min-width: 600px; width: 100%;"></div>
 
     <div v-if="loading" class="text-center text-gray-400 text-sm mt-2">차트 로딩 중...</div>
     <div v-if="error" class="text-center text-red-400 text-sm mt-2">{{ error }}</div>
