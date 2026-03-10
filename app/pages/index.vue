@@ -60,8 +60,14 @@
 
         <!-- 나머지 입력 필드 -->
         <form @submit.prevent="addStock" class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <input v-model="form.buyPrice" type="number" step="0.01" placeholder="매수단가"
-            class="input-field" />
+          <div class="relative">
+            <input v-model="form.buyPrice" type="number" step="0.01" placeholder="매수단가"
+              class="input-field w-full pr-7" />
+            <button v-if="form.buyPrice" type="button" @click="form.buyPrice = ''"
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition">
+              <X :size="13" />
+            </button>
+          </div>
           <input v-model="form.quantity" type="number" placeholder="수량"
             class="input-field" />
           <input v-model="form.buyDate" type="date"
@@ -445,6 +451,7 @@ async function onStockSelect(item: any) {
 function clearSelection() {
   form.ticker = ''
   form.name = ''
+  form.buyPrice = ''
 }
 const adding = ref(false)
 const addError = ref('')
