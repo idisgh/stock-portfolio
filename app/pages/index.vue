@@ -72,21 +72,17 @@
             class="input-field" />
           <input v-model="form.buyDate" type="date"
             class="input-field" />
-          <select v-model="form.platform" class="input-field">
-            <option value="">플랫폼 선택</option>
-            <optgroup label="국내주식">
-              <option>키움증권</option>
-              <option>토스증권</option>
-              <option>미래에셋</option>
-              <option>삼성증권</option>
-              <option>KB증권</option>
-              <option>신한투자</option>
-              <option>NH투자증권</option>
-            </optgroup>
-            <optgroup label="미국주식">
-              <option>Interactive Brokers</option>
-            </optgroup>
-          </select>
+          <input v-model="form.platform" list="platform-list" placeholder="플랫폼 선택 또는 입력" class="input-field" />
+          <datalist id="platform-list">
+            <option>키움증권</option>
+            <option>토스증권</option>
+            <option>미래에셋</option>
+            <option>삼성증권</option>
+            <option>KB증권</option>
+            <option>신한투자</option>
+            <option>NH투자증권</option>
+            <option>Interactive Brokers</option>
+          </datalist>
           <input v-model="form.memo" placeholder="메모 (선택)"
             class="input-field col-span-2" />
           <button type="submit" :disabled="adding || !form.ticker"
