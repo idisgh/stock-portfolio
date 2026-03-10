@@ -79,7 +79,7 @@
       </div>
 
       <!-- 종목 리스트 -->
-      <div class="bg-gray-800 rounded-xl overflow-hidden max-h-[70vh] overflow-y-auto overflow-x-auto">
+      <div class="bg-gray-800 rounded-xl overflow-hidden max-h-[70vh] overflow-y-auto">
         <div class="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
           <h2 class="text-lg font-semibold">보유 종목</h2>
           <div class="flex items-center gap-3">
@@ -103,6 +103,7 @@
           <div class="px-6 pt-4 pb-2 text-xs text-gray-500 font-semibold tracking-wider border-b border-gray-700/50">
             <span class="inline-flex items-center gap-1"><span class="text-xs px-1.5 py-0.5 bg-red-900/50 text-red-300 rounded">US</span> 미장</span>
           </div>
+          <div class="overflow-x-auto">
           <table class="w-full table-fixed min-w-[720px]">
             <colgroup>
               <col style="width: 18%" /><!-- 종목 -->
@@ -200,6 +201,7 @@
               </tr>
             </tbody>
           </table>
+          </div>
         </template>
 
         <!-- 국장 (KRW) -->
@@ -207,6 +209,7 @@
           <div class="px-6 pt-4 pb-2 text-xs text-gray-500 font-semibold tracking-wider border-b border-gray-700/50">
             <span class="inline-flex items-center gap-1"><span class="text-xs px-1.5 py-0.5 bg-blue-900/50 text-blue-300 rounded">KR</span> 국장</span>
           </div>
+          <div class="overflow-x-auto">
           <table class="w-full table-fixed min-w-[720px]">
             <colgroup>
               <col style="width: 18%" />
@@ -299,6 +302,7 @@
               </tr>
             </tbody>
           </table>
+          </div>
         </template>
       </div>
     </main>
