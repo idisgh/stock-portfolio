@@ -73,9 +73,7 @@ export default defineEventHandler(async (event) => {
     let candles = result.quotes
       .filter((q: any) => q.open != null && q.close != null)
       .map((q: any) => ({
-        time: intraday
-          ? Math.floor(new Date(q.date).getTime() / 1000)
-          : new Date(q.date).toISOString().split('T')[0],
+        time: Math.floor(new Date(q.date).getTime() / 1000), // 항상 Unix timestamp(초)로 통일
         open:   q.open,
         high:   q.high,
         low:    q.low,
