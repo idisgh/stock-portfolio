@@ -7,10 +7,13 @@ const yf = new YahooFinance()
 
 let cached = { rate: 1450, updatedAt: 0 }
 
-export default defineEventHandler(async () => {
-  // 5분 캐시 (너무 자주 호출 방지)
+export default defineEventHandler(async (event) => {
+  const query = getQuery(event)
+  const force = query.force === '1'
   const now = Date.now()
-  if (now - cached.updatedAt < 5 * 60 * 1000) {
+
+  // 강제 갱신이 아니면 5분 캐시 사용
+  if (!force && now - cached.updatedAt < 5 * 60 * 1000) {
     return cached
   }
 

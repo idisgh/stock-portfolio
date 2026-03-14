@@ -19,10 +19,15 @@
       <!-- 포트폴리오 요약 -->
       <div v-if="stocks?.length" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-gray-800 rounded-xl p-4 text-right">
-          <div class="text-gray-400 text-xs flex items-center justify-end gap-1">
-            환율 <span class="text-gray-500">USD/KRW</span>
+          <div class="text-gray-400 text-xs flex items-center justify-end gap-2">
+            <span>환율 <span class="text-gray-500">USD/KRW</span></span>
+            <button @click="refreshExchangeRate" :disabled="exRateLoading"
+              class="text-gray-500 hover:text-blue-400 transition disabled:opacity-40" title="환율 갱신">
+              <RefreshCw :size="11" :class="exRateLoading ? 'animate-spin' : ''" />
+            </button>
           </div>
           <div class="text-lg font-bold mt-1">₩{{ exchangeRate.toLocaleString() }}</div>
+          <div class="text-gray-600 text-[10px] mt-0.5">{{ exRateUpdatedLabel }}</div>
         </div>
         <div class="bg-gray-800 rounded-xl p-4 text-right">
           <div class="text-gray-400 text-xs">총 투자금액 (₩)</div>
@@ -215,7 +220,9 @@
                 </td>
                 <td class="text-center px-2 py-3">
                   <button @click.stop="deleteStock(stock._stocks[0].id)"
-                    class="text-gray-600 hover:text-red-400 transition opacity-0 group-hover:opacity-100"><X :size="14" /></button>
+                    class="opacity-0 group-hover:opacity-100 transition flex items-center justify-center w-6 h-6 rounded bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white mx-auto">
+                    <X :size="12" />
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -306,7 +313,9 @@
                 </td>
                 <td class="text-center px-2 py-3">
                   <button @click.stop="deleteStock(stock._stocks[0].id)"
-                    class="text-gray-600 hover:text-red-400 transition opacity-0 group-hover:opacity-100"><X :size="14" /></button>
+                    class="opacity-0 group-hover:opacity-100 transition flex items-center justify-center w-6 h-6 rounded bg-red-500/20 hover:bg-red-500 text-red-400 hover:text-white mx-auto">
+                    <X :size="12" />
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -362,8 +371,30 @@ const groupedKrStocks = computed(() => groupStocks(krStocks.value))
 const quotes = ref<Record<string, any>>({})
 const sparklines = ref<Record<string, number[]>>({})
 const exchangeRate = ref(1450)
+const exRateUpdatedAt = ref(0)
+const exRateLoading = ref(false)
 const quotesLoading = ref(false)
 const showInKRW = ref(false)
+
+const exRateUpdatedLabel = computed(() => {
+  if (!exRateUpdatedAt.value) return ''
+  const diff = Math.floor((Date.now() - exRateUpdatedAt.value) / 60000)
+  if (diff < 1) return '방금 갱신'
+  if (diff < 60) return `${diff}분 전 기준`
+  const d = new Date(exRateUpdatedAt.value)
+  return `${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')} 기준`
+})
+
+async function refreshExchangeRate() {
+  exRateLoading.value = true
+  try {
+    const ex = await $fetch('/api/exchange-rate?force=1') as any
+    exchangeRate.value = ex.rate
+    exRateUpdatedAt.value = ex.updatedAt
+  } catch {} finally {
+    exRateLoading.value = false
+  }
+}
 
 watch(stocks, () => {
   if (stocks.value?.length) refreshAll()
@@ -383,6 +414,7 @@ async function refreshAll() {
     quotes.value = q as any
     sparklines.value = sp as any
     exchangeRate.value = (ex as any).rate
+    exRateUpdatedAt.value = (ex as any).updatedAt ?? Date.now()
   } catch {} finally {
     quotesLoading.value = false
   }
