@@ -115,7 +115,7 @@
         <div class="px-6 py-4 border-b border-gray-700 flex items-center justify-between">
           <h2 class="text-lg font-semibold">보유 종목</h2>
           <div class="flex items-center gap-3">
-            <span class="text-gray-400 text-sm">{{ stocks?.length || 0 }}개</span>
+            <span class="text-gray-400 text-sm">{{ (groupedUsStocks.length + groupedKrStocks.length) }}개</span>
             <button @click="refreshAll" :disabled="quotesLoading"
               class="flex items-center gap-1 text-xs px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg transition">
               <RefreshCw :size="13" :class="quotesLoading ? 'animate-spin' : ''" />
