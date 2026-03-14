@@ -169,11 +169,7 @@
               <tr v-for="stock in groupedUsStocks" :key="stock.ticker + (stock.tradeType||'현금')"
                 class="border-b border-gray-700/50 hover:bg-gray-700/30 transition group">
                 <td class="px-4 py-3 cursor-pointer" @click="navigateTo(`/stock/${stock._stocks[0].id}`)">
-                  <div class="font-medium hover:text-blue-400 transition text-sm flex items-center gap-1.5">
-                    {{ stock.name }}
-                    <span v-if="stock._stocks.length > 1"
-                      class="text-[10px] px-1 py-0.5 bg-gray-600 text-gray-300 rounded font-semibold leading-none">×{{ stock._stocks.length }}</span>
-                  </div>
+                  <div class="font-medium hover:text-blue-400 transition text-sm">{{ stock.name }}</div>
                   <div class="text-gray-500 text-xs">{{ stock.ticker }}</div>
                 </td>
                 <td class="text-center px-2 py-3">
@@ -190,16 +186,8 @@
                     :class="t === '신용' ? 'bg-orange-500/20 text-orange-400' : 'bg-blue-500/20 text-blue-400'"
                     class="inline-block text-[10px] px-1.5 py-0.5 rounded font-semibold mr-0.5">{{ t }}</span>
                 </td>
-                <td class="text-right px-3 py-3">
-                  <template v-if="editing?.id === stock.id && editing?.field === 'buyPrice'">
-                    <input v-model="editing.value" type="number" step="0.01"
-                      class="w-24 px-2 py-1 bg-gray-600 rounded text-right text-sm font-mono"
-                      @keyup.enter="saveEdit(stock)" @keyup.escape="cancelEdit" @blur="saveOrCancel(stock)" />
-                  </template>
-                  <span v-else class="font-mono text-sm cursor-pointer hover:text-yellow-400 transition"
-                    @click="startEdit(stock, 'buyPrice', stock.buyPrice)">
-                    {{ showInKRW ? '₩' + formatPrice(stock.buyPrice * exchangeRate) : '$' + formatPrice(stock.buyPrice) }}
-                  </span>
+                <td class="text-right px-3 py-3 font-mono text-sm">
+                  {{ showInKRW ? '₩' + formatPrice(stock.buyPrice * exchangeRate) : '$' + formatPrice(stock.buyPrice) }}
                 </td>
                 <td class="text-right px-3 py-3 font-mono text-sm">
                   <template v-if="quotes[stock.ticker]">
@@ -211,15 +199,7 @@
                   </template>
                   <span v-else class="text-gray-500">-</span>
                 </td>
-                <td class="text-right px-3 py-3">
-                  <template v-if="editing?.id === stock.id && editing?.field === 'quantity'">
-                    <input v-model="editing.value" type="number"
-                      class="w-16 px-2 py-1 bg-gray-600 rounded text-right text-sm font-mono"
-                      @keyup.enter="saveEdit(stock)" @keyup.escape="cancelEdit" @blur="saveOrCancel(stock)" />
-                  </template>
-                  <span v-else class="font-mono text-sm cursor-pointer hover:text-yellow-400 transition"
-                    @click="startEdit(stock, 'quantity', stock.quantity)">{{ stock.quantity }}</span>
-                </td>
+                <td class="text-right px-3 py-3 font-mono text-sm">{{ stock.quantity }}</td>
                 <td class="text-right px-3 py-3 font-mono text-sm font-semibold"
                   :class="getProfitRate(stock) >= 0 ? 'text-red-400' : 'text-blue-400'">
                   {{ getProfitRate(stock) >= 0 ? '+' : '' }}{{ getProfitRate(stock).toFixed(2) }}%
@@ -234,7 +214,7 @@
                   <span v-else class="text-gray-600">✕</span>
                 </td>
                 <td class="text-center px-2 py-3">
-                  <button @click="deleteStock(stock._stocks[0].id)"
+                  <button @click.stop="deleteStock(stock._stocks[0].id)"
                     class="text-gray-600 hover:text-red-400 transition opacity-0 group-hover:opacity-100"><X :size="14" /></button>
                 </td>
               </tr>
@@ -282,11 +262,7 @@
               <tr v-for="stock in groupedKrStocks" :key="stock.ticker + (stock.tradeType||'현금')"
                 class="border-b border-gray-700/50 hover:bg-gray-700/30 transition group">
                 <td class="px-4 py-3 cursor-pointer" @click="navigateTo(`/stock/${stock._stocks[0].id}`)">
-                  <div class="font-medium hover:text-blue-400 transition text-sm flex items-center gap-1.5">
-                    {{ stock.name }}
-                    <span v-if="stock._stocks.length > 1"
-                      class="text-[10px] px-1 py-0.5 bg-gray-600 text-gray-300 rounded font-semibold leading-none">×{{ stock._stocks.length }}</span>
-                  </div>
+                  <div class="font-medium hover:text-blue-400 transition text-sm">{{ stock.name }}</div>
                   <div class="text-gray-500 text-xs">{{ stock.ticker }}</div>
                 </td>
                 <td class="text-center px-2 py-3">
@@ -303,17 +279,7 @@
                     :class="t === '신용' ? 'bg-orange-500/20 text-orange-400' : 'bg-blue-500/20 text-blue-400'"
                     class="inline-block text-[10px] px-1.5 py-0.5 rounded font-semibold mr-0.5">{{ t }}</span>
                 </td>
-                <td class="text-right px-3 py-3">
-                  <template v-if="editing?.id === stock.id && editing?.field === 'buyPrice'">
-                    <input v-model="editing.value" type="number" step="1"
-                      class="w-24 px-2 py-1 bg-gray-600 rounded text-right text-sm font-mono"
-                      @keyup.enter="saveEdit(stock)" @keyup.escape="cancelEdit" @blur="saveOrCancel(stock)" />
-                  </template>
-                  <span v-else class="font-mono text-sm cursor-pointer hover:text-yellow-400 transition"
-                    @click="startEdit(stock, 'buyPrice', stock.buyPrice)">
-                    ₩{{ formatPrice(stock.buyPrice) }}
-                  </span>
-                </td>
+                <td class="text-right px-3 py-3 font-mono text-sm">₩{{ formatPrice(stock.buyPrice) }}</td>
                 <td class="text-right px-3 py-3 font-mono text-sm">
                   <template v-if="quotes[stock.ticker]">
                     ₩{{ formatPrice(quotes[stock.ticker].currentPrice) }}
@@ -324,15 +290,7 @@
                   </template>
                   <span v-else class="text-gray-500">-</span>
                 </td>
-                <td class="text-right px-3 py-3">
-                  <template v-if="editing?.id === stock.id && editing?.field === 'quantity'">
-                    <input v-model="editing.value" type="number"
-                      class="w-16 px-2 py-1 bg-gray-600 rounded text-right text-sm font-mono"
-                      @keyup.enter="saveEdit(stock)" @keyup.escape="cancelEdit" @blur="saveOrCancel(stock)" />
-                  </template>
-                  <span v-else class="font-mono text-sm cursor-pointer hover:text-yellow-400 transition"
-                    @click="startEdit(stock, 'quantity', stock.quantity)">{{ stock.quantity }}</span>
-                </td>
+                <td class="text-right px-3 py-3 font-mono text-sm">{{ stock.quantity }}</td>
                 <td class="text-right px-3 py-3 font-mono text-sm font-semibold"
                   :class="getProfitRate(stock) >= 0 ? 'text-red-400' : 'text-blue-400'">
                   {{ getProfitRate(stock) >= 0 ? '+' : '' }}{{ getProfitRate(stock).toFixed(2) }}%
@@ -347,7 +305,7 @@
                   <span v-else class="text-gray-600">✕</span>
                 </td>
                 <td class="text-center px-2 py-3">
-                  <button @click="deleteStock(stock._stocks[0].id)"
+                  <button @click.stop="deleteStock(stock._stocks[0].id)"
                     class="text-gray-600 hover:text-red-400 transition opacity-0 group-hover:opacity-100"><X :size="14" /></button>
                 </td>
               </tr>
@@ -378,7 +336,7 @@ const krStocks = computed(() => (stocks.value || []).filter((s: any) => !isUSD(s
 function groupStocks(list: any[]) {
   const map = new Map<string, any>()
   for (const s of list) {
-    const key = `${s.ticker}__${s.tradeType || '현금'}`
+    const key = s.ticker  // ticker만으로 그룹화
     if (!map.has(key)) {
       map.set(key, {
         ...s,
@@ -480,42 +438,6 @@ const totalCurrentKRW = computed(() =>
 const totalProfitRate = computed(() =>
   totalInvestedKRW.value ? ((totalCurrentKRW.value - totalInvestedKRW.value) / totalInvestedKRW.value) * 100 : 0
 )
-
-// 인라인 수정
-const editing = ref<{ id: number, field: string, value: any } | null>(null)
-
-function startEdit(stock: any, field: string, value: any) {
-  editing.value = { id: stock.id, field, value }
-  // 다음 tick에서 input에 포커스
-  nextTick(() => {
-    const input = document.querySelector('input[type="number"]:focus, input[placeholder="플랫폼"]:focus') as HTMLInputElement
-    input?.select()
-  })
-}
-
-function cancelEdit() {
-  editing.value = null
-}
-
-async function saveOrCancel(stock: any) {
-  // blur 시: 값이 변경됐으면 저장, 아니면 취소
-  if (!editing.value) return
-  await saveEdit(stock)
-}
-
-async function saveEdit(stock: any) {
-  if (!editing.value) return
-  const { field, value } = editing.value
-  editing.value = null  // 먼저 닫기
-
-  try {
-    await $fetch(`/api/stocks/${stock.id}`, {
-      method: 'PUT',
-      body: { [field]: field === 'buyPrice' ? Number(value) : field === 'quantity' ? Number(value) : value }
-    })
-    await refresh()
-  } catch {}
-}
 
 // 종목 추가
 const today = new Date().toISOString().slice(0, 10) // YYYY-MM-DD
