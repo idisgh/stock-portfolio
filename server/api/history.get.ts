@@ -4,8 +4,8 @@
 // OHLCV = Open(시가), High(고가), Low(저가), Close(종가), Volume(거래량)
 //
 // interval 지원:
-//   5m  → 최근 1일 이내만 유효
-//   1h  → 최근 5일 이내만 유효
+//   5m  → 최근 1일 (주말이면 마지막 거래일 자동 처리)
+//   1h  → 최근 5일
 //   1d  → 일봉 (최대 2년)
 //   1wk → 주봉 (2년 이상)
 
@@ -13,16 +13,17 @@ import YahooFinance from 'yahoo-finance2'
 
 const yf = new YahooFinance()
 
-// range → 날짜 계산 (일 단위)
-const rangeMap: Record<string, number> = {
-  '1d':  1,
-  '5d':  5,
-  '1mo': 30,
-  '3mo': 90,
-  '6mo': 180,
-  '1y':  365,
-  '2y':  730,
-  '5y':  1825,
+// range → fetch 시 사용할 날짜 범위 (일 단위)
+// 1d는 주말 대비 7일치 요청 후 마지막 거래일만 필터링
+const fetchDaysMap: Record<string, number> = {
+  '1d':  7,    // 주말/공휴일 대비 여유 있게 7일, 이후 마지막 거래일만 추출
+  '5d':  7,
+  '1mo': 35,
+  '3mo': 95,
+  '6mo': 185,
+  '1y':  370,
+  '2y':  735,
+  '5y':  1830,
 }
 
 // range 기본 interval (명시 없을 때)
@@ -39,39 +40,37 @@ const defaultIntervalMap: Record<string, string> = {
 
 // interval이 분/시간인지 여부
 function isIntraday(interval: string) {
-  return interval === '1m' || interval === '2m' || interval === '5m' ||
-         interval === '15m' || interval === '30m' || interval === '60m' || interval === '1h'
+  return ['1m','2m','5m','15m','30m','60m','1h'].includes(interval)
+}
+
+// Unix timestamp(초) → "YYYY-MM-DD" 변환
+function toDateStr(ts: number) {
+  return new Date(ts * 1000).toISOString().split('T')[0]
 }
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const ticker = String(query.ticker || '')
-
-  // 하위 호환: period 파라미터도 range로 취급
-  const range = String(query.range || query.period || '3mo')
+  const range    = String(query.range || query.period || '3mo')
   const interval = String(query.interval || defaultIntervalMap[range] || '1d')
 
   if (!ticker) {
     throw createError({ statusCode: 400, statusMessage: 'ticker가 필요합니다' })
   }
 
-  const days = rangeMap[range] ?? 90
-  const now = new Date()
+  const days = fetchDaysMap[range] ?? 95
+  const now  = new Date()
   const startDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000)
+  const intraday  = isIntraday(interval)
 
   try {
     const result = await yf.chart(ticker, {
-      period1: startDate,
-      period2: now,
+      period1:  startDate,
+      period2:  now,
       interval: interval as any,
     })
 
-    const intraday = isIntraday(interval)
-
-    // lightweight-charts 형식으로 변환
-    // - 일봉/주봉: "YYYY-MM-DD" 문자열
-    // - 분봉/시간봉: Unix timestamp (초)
-    const candles = result.quotes
+    let candles = result.quotes
       .filter((q: any) => q.open != null && q.close != null)
       .map((q: any) => ({
         time: intraday
@@ -83,6 +82,12 @@ export default defineEventHandler(async (event) => {
         close:  q.close,
         volume: q.volume ?? 0,
       }))
+
+    // 1d range: 가장 마지막 거래일 데이터만 추출
+    if (range === '1d' && intraday && candles.length > 0) {
+      const lastDate = toDateStr(candles[candles.length - 1].time as number)
+      candles = candles.filter(c => toDateStr(c.time as number) === lastDate)
+    }
 
     return { ticker, range, interval, intraday, candles }
   } catch (e) {
