@@ -142,15 +142,25 @@ async function loadData() {
     })))
 
     chart?.timeScale().fitContent()
-  } catch {
+  } catch (e) {
+    console.error('차트 오류:', e)
     error.value = '차트 데이터 로드 실패'
   } finally {
     loading.value = false
   }
 }
 
-// 기간 변경 시 재로드
-watch(selected, () => loadData())
+// 기간 변경 시 chart 재생성 (분봉↔일봉 time 타입 충돌 방지)
+watch(selected, async () => {
+  if (chart) {
+    chart.remove()
+    chart = null
+    candleSeries = null
+    volumeSeries = null
+  }
+  initChart()
+  await loadData()
+})
 
 onMounted(() => {
   initChart()
