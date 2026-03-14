@@ -84,6 +84,8 @@
               <th class="text-right py-2 pr-4">단가</th>
               <th class="text-right py-2 pr-4">수량</th>
               <th class="text-right py-2 pr-4">투자금액</th>
+              <th class="text-center py-2 pr-4">거래유형</th>
+              <th class="text-left py-2 pr-4">플랫폼</th>
               <th class="text-left py-2">메모</th>
             </tr>
           </thead>
@@ -94,6 +96,13 @@
               <td class="py-2 pr-4 text-right font-mono">{{ formatPrice(s.buyPrice) }}</td>
               <td class="py-2 pr-4 text-right font-mono">{{ s.quantity }}주</td>
               <td class="py-2 pr-4 text-right font-mono">{{ formatPrice(s.buyPrice * s.quantity) }}</td>
+              <td class="py-2 pr-4 text-center">
+                <span :class="(s.tradeType || '현금') === '신용' ? 'bg-orange-500/20 text-orange-400' : 'bg-blue-500/20 text-blue-400'"
+                  class="text-[10px] px-1.5 py-0.5 rounded font-semibold">
+                  {{ s.tradeType || '현금' }}
+                </span>
+              </td>
+              <td class="py-2 pr-4 text-gray-400 text-sm">{{ s.platform || '-' }}</td>
               <td class="py-2 text-gray-400">
                 <span v-if="s.memo" class="flex items-center gap-1">
                   <span class="text-green-500 font-bold text-xs">O</span> {{ s.memo }}
@@ -109,6 +118,8 @@
               <td class="pt-2 pr-4 text-right font-mono">{{ formatPrice(avgBuyPrice) }} <span class="text-gray-500 font-normal">(평균)</span></td>
               <td class="pt-2 pr-4 text-right font-mono">{{ totalQuantity }}주</td>
               <td class="pt-2 pr-4 text-right font-mono">{{ formatPrice(avgBuyPrice * totalQuantity) }}</td>
+              <td></td>
+              <td></td>
               <td></td>
             </tr>
           </tfoot>

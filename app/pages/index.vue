@@ -131,16 +131,18 @@
             <span class="inline-flex items-center gap-1"><span class="text-xs px-1.5 py-0.5 bg-red-900/50 text-red-300 rounded">US</span> 미장</span>
           </div>
           <div class="overflow-x-auto">
-          <table class="w-full table-fixed min-w-[720px]">
+          <table class="w-full table-fixed min-w-[860px]">
             <colgroup>
-              <col style="width: 18%" /><!-- 종목 -->
-              <col style="width: 8%" /> <!-- 주간 -->
-              <col style="width: 8%" /> <!-- 플랫폼 -->
-              <col style="width: 14%" /><!-- 매수단가 -->
-              <col style="width: 14%" /><!-- 현재가 -->
-              <col style="width: 7%" /> <!-- 수량 -->
-              <col style="width: 11%" /><!-- 수익률 -->
-              <col style="width: 14%" /><!-- 수익금 -->
+              <col style="width: 15%" /><!-- 종목 -->
+              <col style="width: 6%" /> <!-- 주간 -->
+              <col style="width: 10%" /><!-- 플랫폼 -->
+              <col style="width: 8%" /> <!-- 거래유형 -->
+              <col style="width: 11%" /><!-- 매수단가 -->
+              <col style="width: 11%" /><!-- 현재가 -->
+              <col style="width: 6%" /> <!-- 수량 -->
+              <col style="width: 9%" /> <!-- 수익률 -->
+              <col style="width: 11%" /><!-- 수익금 -->
+              <col style="width: 8%" /> <!-- 메모 -->
               <col style="width: 4%" /> <!-- 삭제 -->
             </colgroup>
             <thead>
@@ -148,6 +150,7 @@
                 <th class="text-left px-4 py-2">종목</th>
                 <th class="text-center px-2 py-2">주간</th>
                 <th class="text-center px-2 py-2">플랫폼</th>
+                <th class="text-center px-2 py-2">거래유형</th>
                 <th class="text-right px-3 py-2">
                   매수단가
                   <button @click="showInKRW = !showInKRW" class="ml-1 text-gray-500 hover:text-white transition" title="통화 전환">
@@ -158,6 +161,7 @@
                 <th class="text-right px-3 py-2">수량</th>
                 <th class="text-right px-3 py-2">수익률</th>
                 <th class="text-right px-3 py-2">수익금</th>
+                <th class="text-center px-2 py-2">메모</th>
                 <th class="text-center px-2 py-2"></th>
               </tr>
             </thead>
@@ -169,43 +173,22 @@
                     {{ stock.name }}
                     <span v-if="stock._stocks.length > 1"
                       class="text-[10px] px-1 py-0.5 bg-gray-600 text-gray-300 rounded font-semibold leading-none">×{{ stock._stocks.length }}</span>
-                    <span v-if="stock.tradeType === '신용'"
-                      class="text-[10px] px-1 py-0.5 bg-orange-500/20 text-orange-400 rounded font-semibold leading-none">신용</span>
                   </div>
                   <div class="text-gray-500 text-xs">{{ stock.ticker }}</div>
-                  <!-- 메모 -->
-                  <div class="mt-0.5 text-xs">
-                    <template v-if="stock._memos.length">
-                      <span class="text-green-500 font-bold mr-1">O</span>
-                      <span v-for="(m, i) in stock._memos" :key="i" class="text-gray-400">{{ i > 0 ? ' / ' : '' }}{{ m }}</span>
-                    </template>
-                    <span v-else class="text-gray-600">✕</span>
-                  </div>
                 </td>
                 <td class="text-center px-2 py-3">
                   <Sparkline v-if="sparklines[stock.ticker]?.length" :data="sparklines[stock.ticker]" :width="40" :height="18" />
                   <span v-else class="text-gray-600 text-xs">-</span>
                 </td>
+                <!-- 플랫폼: 여러 개면 "미래에셋 외 2" -->
+                <td class="text-center px-2 py-3 text-gray-400 text-xs">
+                  {{ displayPlatform(stock) }}
+                </td>
+                <!-- 거래유형: 현금/신용 or 둘 다 -->
                 <td class="text-center px-2 py-3">
-                  <template v-if="editing?.id === stock.id && editing?.field === 'platform'">
-                    <select v-model="editing.value"
-                      class="w-24 px-1 py-0.5 bg-gray-600 rounded text-xs text-center"
-                      @change="saveEdit(stock)" @keyup.escape="cancelEdit">
-                      <option value="">-</option>
-                      <option>키움증권</option>
-                      <option>토스증권</option>
-                      <option>미래에셋</option>
-                      <option>삼성증권</option>
-                      <option>KB증권</option>
-                      <option>신한투자</option>
-                      <option>NH투자증권</option>
-                      <option>Interactive Brokers</option>
-                    </select>
-                  </template>
-                  <span v-else class="text-gray-500 text-xs cursor-pointer hover:text-yellow-400"
-                    @click.stop="startEdit(stock, 'platform', stock.platform || '')">
-                    {{ stock.platform || '-' }}
-                  </span>
+                  <span v-for="t in displayTradeTypes(stock)" :key="t"
+                    :class="t === '신용' ? 'bg-orange-500/20 text-orange-400' : 'bg-blue-500/20 text-blue-400'"
+                    class="inline-block text-[10px] px-1.5 py-0.5 rounded font-semibold mr-0.5">{{ t }}</span>
                 </td>
                 <td class="text-right px-3 py-3">
                   <template v-if="editing?.id === stock.id && editing?.field === 'buyPrice'">
@@ -245,8 +228,13 @@
                   :class="getProfit(stock) >= 0 ? 'text-red-400' : 'text-blue-400'">
                   {{ formatCurrency(getProfit(stock), '$') }}
                 </td>
+                <!-- 메모 O/✕ -->
+                <td class="text-center px-2 py-3 text-xs">
+                  <span v-if="stock._memos.length" class="text-green-500 font-bold">O</span>
+                  <span v-else class="text-gray-600">✕</span>
+                </td>
                 <td class="text-center px-2 py-3">
-                  <button @click="deleteStock(stock.id)"
+                  <button @click="deleteStock(stock._stocks[0].id)"
                     class="text-gray-600 hover:text-red-400 transition opacity-0 group-hover:opacity-100"><X :size="14" /></button>
                 </td>
               </tr>
@@ -261,16 +249,18 @@
             <span class="inline-flex items-center gap-1"><span class="text-xs px-1.5 py-0.5 bg-blue-900/50 text-blue-300 rounded">KR</span> 국장</span>
           </div>
           <div class="overflow-x-auto">
-          <table class="w-full table-fixed min-w-[720px]">
+          <table class="w-full table-fixed min-w-[860px]">
             <colgroup>
-              <col style="width: 18%" />
+              <col style="width: 15%" />
+              <col style="width: 6%" />
+              <col style="width: 10%" />
               <col style="width: 8%" />
-              <col style="width: 8%" />
-              <col style="width: 14%" />
-              <col style="width: 14%" />
-              <col style="width: 7%" />
               <col style="width: 11%" />
-              <col style="width: 14%" />
+              <col style="width: 11%" />
+              <col style="width: 6%" />
+              <col style="width: 9%" />
+              <col style="width: 11%" />
+              <col style="width: 8%" />
               <col style="width: 4%" />
             </colgroup>
             <thead>
@@ -278,11 +268,13 @@
                 <th class="text-left px-4 py-2">종목</th>
                 <th class="text-center px-2 py-2">주간</th>
                 <th class="text-center px-2 py-2">플랫폼</th>
+                <th class="text-center px-2 py-2">거래유형</th>
                 <th class="text-right px-3 py-2">매수단가</th>
                 <th class="text-right px-3 py-2">현재가</th>
                 <th class="text-right px-3 py-2">수량</th>
                 <th class="text-right px-3 py-2">수익률</th>
                 <th class="text-right px-3 py-2">수익금</th>
+                <th class="text-center px-2 py-2">메모</th>
                 <th class="text-center px-2 py-2"></th>
               </tr>
             </thead>
@@ -294,43 +286,22 @@
                     {{ stock.name }}
                     <span v-if="stock._stocks.length > 1"
                       class="text-[10px] px-1 py-0.5 bg-gray-600 text-gray-300 rounded font-semibold leading-none">×{{ stock._stocks.length }}</span>
-                    <span v-if="stock.tradeType === '신용'"
-                      class="text-[10px] px-1 py-0.5 bg-orange-500/20 text-orange-400 rounded font-semibold leading-none">신용</span>
                   </div>
                   <div class="text-gray-500 text-xs">{{ stock.ticker }}</div>
-                  <!-- 메모 -->
-                  <div class="mt-0.5 text-xs">
-                    <template v-if="stock._memos.length">
-                      <span class="text-green-500 font-bold mr-1">O</span>
-                      <span v-for="(m, i) in stock._memos" :key="i" class="text-gray-400">{{ i > 0 ? ' / ' : '' }}{{ m }}</span>
-                    </template>
-                    <span v-else class="text-gray-600">✕</span>
-                  </div>
                 </td>
                 <td class="text-center px-2 py-3">
                   <Sparkline v-if="sparklines[stock.ticker]?.length" :data="sparklines[stock.ticker]" :width="40" :height="18" />
                   <span v-else class="text-gray-600 text-xs">-</span>
                 </td>
+                <!-- 플랫폼: 여러 개면 "미래에셋 외 2" -->
+                <td class="text-center px-2 py-3 text-gray-400 text-xs">
+                  {{ displayPlatform(stock) }}
+                </td>
+                <!-- 거래유형: 현금/신용 or 둘 다 -->
                 <td class="text-center px-2 py-3">
-                  <template v-if="editing?.id === stock.id && editing?.field === 'platform'">
-                    <select v-model="editing.value"
-                      class="w-24 px-1 py-0.5 bg-gray-600 rounded text-xs text-center"
-                      @change="saveEdit(stock)" @keyup.escape="cancelEdit">
-                      <option value="">-</option>
-                      <option>키움증권</option>
-                      <option>토스증권</option>
-                      <option>미래에셋</option>
-                      <option>삼성증권</option>
-                      <option>KB증권</option>
-                      <option>신한투자</option>
-                      <option>NH투자증권</option>
-                      <option>Interactive Brokers</option>
-                    </select>
-                  </template>
-                  <span v-else class="text-gray-500 text-xs cursor-pointer hover:text-yellow-400"
-                    @click.stop="startEdit(stock, 'platform', stock.platform || '')">
-                    {{ stock.platform || '-' }}
-                  </span>
+                  <span v-for="t in displayTradeTypes(stock)" :key="t"
+                    :class="t === '신용' ? 'bg-orange-500/20 text-orange-400' : 'bg-blue-500/20 text-blue-400'"
+                    class="inline-block text-[10px] px-1.5 py-0.5 rounded font-semibold mr-0.5">{{ t }}</span>
                 </td>
                 <td class="text-right px-3 py-3">
                   <template v-if="editing?.id === stock.id && editing?.field === 'buyPrice'">
@@ -370,8 +341,13 @@
                   :class="getProfit(stock) >= 0 ? 'text-red-400' : 'text-blue-400'">
                   {{ formatCurrency(getProfit(stock), '₩') }}
                 </td>
+                <!-- 메모 O/✕ -->
+                <td class="text-center px-2 py-3 text-xs">
+                  <span v-if="stock._memos.length" class="text-green-500 font-bold">O</span>
+                  <span v-else class="text-gray-600">✕</span>
+                </td>
                 <td class="text-center px-2 py-3">
-                  <button @click="deleteStock(stock.id)"
+                  <button @click="deleteStock(stock._stocks[0].id)"
                     class="text-gray-600 hover:text-red-400 transition opacity-0 group-hover:opacity-100"><X :size="14" /></button>
                 </td>
               </tr>
@@ -467,6 +443,19 @@ function toKRW(stock: any) {
 function currentPriceKRW(stock: any) {
   const cp = getCurrentPrice(stock)
   return isUSD(stock) ? cp * exchangeRate.value : cp
+}
+
+// 그룹 내 플랫폼 표시 (여러 개면 "미래에셋 외 2")
+function displayPlatform(stock: any) {
+  const platforms = [...new Set((stock._stocks || [stock]).map((s: any) => s.platform).filter(Boolean))]
+  if (platforms.length === 0) return '-'
+  if (platforms.length === 1) return platforms[0]
+  return `${platforms[0]} 외 ${platforms.length - 1}`
+}
+
+// 그룹 내 거래유형 목록 (중복 제거)
+function displayTradeTypes(stock: any) {
+  return [...new Set((stock._stocks || [stock]).map((s: any) => s.tradeType || '현금'))] as string[]
 }
 
 // 수익률 계산
