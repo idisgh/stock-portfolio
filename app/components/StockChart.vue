@@ -152,12 +152,15 @@ async function loadData() {
 
 // 기간 변경 시 chart 재생성 (분봉↔일봉 time 타입 충돌 방지)
 watch(selected, async () => {
+  // chart 인스턴스 + 컨테이너 내용 완전 초기화
   if (chart) {
     chart.remove()
     chart = null
     candleSeries = null
     volumeSeries = null
   }
+  if (chartContainer.value) chartContainer.value.innerHTML = ''
+  await nextTick()  // DOM 정리 완료 대기
   initChart()
   await loadData()
 })
