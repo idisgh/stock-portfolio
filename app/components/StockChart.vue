@@ -1,12 +1,14 @@
 <template>
   <div>
     <!-- 기간 선택 버튼 -->
-    <div class="flex gap-2 mb-3">
+    <div class="flex gap-2 mb-3 flex-wrap">
       <button
         v-for="p in periods"
-        :key="p.value"
-        @click="selectedPeriod = p.value"
-        :class="selectedPeriod === p.value ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-400'"
+        :key="p.range + p.interval"
+        @click="selectPeriod(p)"
+        :class="selected.range === p.range && selected.interval === p.interval
+          ? 'bg-blue-600 text-white'
+          : 'bg-gray-700 text-gray-400'"
         class="px-3 py-1 rounded-lg text-xs font-medium transition hover:bg-gray-600"
       >
         {{ p.label }}
@@ -29,7 +31,6 @@ const props = defineProps<{
 }>()
 
 const chartContainer = ref<HTMLElement>()
-const selectedPeriod = ref('3mo')
 const loading = ref(false)
 const error = ref('')
 
@@ -37,15 +38,24 @@ let chart: any = null
 let candleSeries: any = null
 let volumeSeries: any = null
 
+// 기간 + interval 목록
 const periods = [
-  { label: '1개월', value: '1mo' },
-  { label: '3개월', value: '3mo' },
-  { label: '6개월', value: '6mo' },
-  { label: '1년', value: '1y' },
-  { label: '2년', value: '2y' },
+  { label: '1일',   range: '1d',  interval: '5m'  },
+  { label: '5일',   range: '5d',  interval: '1h'  },
+  { label: '1개월', range: '1mo', interval: '1d'  },
+  { label: '3개월', range: '3mo', interval: '1d'  },
+  { label: '6개월', range: '6mo', interval: '1d'  },
+  { label: '1년',   range: '1y',  interval: '1d'  },
+  { label: '2년',   range: '2y',  interval: '1wk' },
 ]
 
-// 차트 초기화
+const selected = ref(periods[2]) // 기본: 1개월 일봉
+
+function selectPeriod(p: typeof periods[number]) {
+  selected.value = p
+}
+
+// 차트 초기화 (timeVisible은 나중에 applyOptions로 조정)
 function initChart() {
   if (!chartContainer.value || chart) return
 
@@ -67,17 +77,18 @@ function initChart() {
     timeScale: {
       borderColor: '#4b5563',
       timeVisible: false,
+      secondsVisible: false,
     },
   })
 
   // lightweight-charts v5: addSeries(SeriesType, options)
   candleSeries = chart.addSeries(CandlestickSeries, {
-    upColor: '#ef4444',       // 양봉 = 빨강 (한국식)
-    downColor: '#3b82f6',     // 음봉 = 파랑
-    borderUpColor: '#ef4444',
-    borderDownColor: '#3b82f6',
-    wickUpColor: '#ef4444',
-    wickDownColor: '#3b82f6',
+    upColor:        '#ef4444', // 양봉 = 빨강 (한국식)
+    downColor:      '#3b82f6', // 음봉 = 파랑
+    borderUpColor:  '#ef4444',
+    borderDownColor:'#3b82f6',
+    wickUpColor:    '#ef4444',
+    wickDownColor:  '#3b82f6',
   })
 
   // 거래량 차트 (하단)
@@ -89,8 +100,6 @@ function initChart() {
   chart.priceScale('volume').applyOptions({
     scaleMargins: { top: 0.8, bottom: 0 },
   })
-
-  chart.timeScale().fitContent()
 }
 
 // 데이터 로드
@@ -98,25 +107,36 @@ async function loadData() {
   loading.value = true
   error.value = ''
 
+  const { range, interval } = selected.value
+
   try {
-    const data = await $fetch(`/api/history?ticker=${props.ticker}&period=${selectedPeriod.value}`)
-    const candles = (data as any).candles || []
+    const data: any = await $fetch(
+      `/api/history?ticker=${props.ticker}&range=${range}&interval=${interval}`
+    )
+    const candles = data.candles || []
+    const intraday: boolean = data.intraday ?? false
 
     if (!candles.length) {
       error.value = '데이터가 없습니다'
       return
     }
 
+    // 분봉/시간봉이면 timeScale에 시간 표시
+    chart?.timeScale().applyOptions({
+      timeVisible: intraday,
+      secondsVisible: false,
+    })
+
     candleSeries?.setData(candles.map((c: any) => ({
-      time: c.time,
-      open: c.open,
-      high: c.high,
-      low: c.low,
+      time:  c.time,
+      open:  c.open,
+      high:  c.high,
+      low:   c.low,
       close: c.close,
     })))
 
     volumeSeries?.setData(candles.map((c: any) => ({
-      time: c.time,
+      time:  c.time,
       value: c.volume,
       color: c.close >= c.open ? 'rgba(239,68,68,0.3)' : 'rgba(59,130,246,0.3)',
     })))
@@ -129,16 +149,14 @@ async function loadData() {
   }
 }
 
-// 기간 변경 시 데이터 다시 로드
-watch(selectedPeriod, () => loadData())
+// 기간 변경 시 재로드
+watch(selected, () => loadData())
 
-// 마운트 시 차트 생성 + 데이터 로드
 onMounted(() => {
   initChart()
   loadData()
 })
 
-// 언마운트 시 차트 정리 (메모리 누수 방지)
 onUnmounted(() => {
   chart?.remove()
   chart = null
