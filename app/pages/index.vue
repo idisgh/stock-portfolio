@@ -19,15 +19,16 @@
       <!-- 포트폴리오 요약 -->
       <div v-if="stocks?.length" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div class="bg-gray-800 rounded-xl p-4 text-right">
-          <div class="text-gray-400 text-xs flex items-center justify-end gap-2">
-            <span>환율 <span class="text-gray-500">USD/KRW</span></span>
+          <div class="text-gray-400 text-xs">환율 <span class="text-gray-500">USD/KRW</span></div>
+          <div class="text-lg font-bold mt-1">₩{{ exchangeRate.toLocaleString() }}</div>
+          <div class="flex items-center justify-end gap-2 mt-1">
+            <span class="text-gray-600 text-[10px]">{{ exRateUpdatedLabel }}</span>
             <button @click="refreshExchangeRate" :disabled="exRateLoading"
-              class="text-gray-500 hover:text-blue-400 transition disabled:opacity-40" title="환율 갱신">
-              <RefreshCw :size="11" :class="exRateLoading ? 'animate-spin' : ''" />
+              class="flex items-center gap-1 px-2 py-0.5 rounded bg-gray-700 hover:bg-blue-600 text-gray-400 hover:text-white text-[10px] transition disabled:opacity-40">
+              <RefreshCw :size="9" :class="exRateLoading ? 'animate-spin' : ''" />
+              갱신
             </button>
           </div>
-          <div class="text-lg font-bold mt-1">₩{{ exchangeRate.toLocaleString() }}</div>
-          <div class="text-gray-600 text-[10px] mt-0.5">{{ exRateUpdatedLabel }}</div>
         </div>
         <div class="bg-gray-800 rounded-xl p-4 text-right">
           <div class="text-gray-400 text-xs">총 투자금액 (₩)</div>
