@@ -162,15 +162,25 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="stock in usStocks" :key="stock.id"
+              <tr v-for="stock in groupedUsStocks" :key="stock.ticker + (stock.tradeType||'현금')"
                 class="border-b border-gray-700/50 hover:bg-gray-700/30 transition group">
-                <td class="px-4 py-3 cursor-pointer" @click="navigateTo(`/stock/${stock.id}`)">
+                <td class="px-4 py-3 cursor-pointer" @click="navigateTo(`/stock/${stock._stocks[0].id}`)">
                   <div class="font-medium hover:text-blue-400 transition text-sm flex items-center gap-1.5">
                     {{ stock.name }}
+                    <span v-if="stock._stocks.length > 1"
+                      class="text-[10px] px-1 py-0.5 bg-gray-600 text-gray-300 rounded font-semibold leading-none">×{{ stock._stocks.length }}</span>
                     <span v-if="stock.tradeType === '신용'"
                       class="text-[10px] px-1 py-0.5 bg-orange-500/20 text-orange-400 rounded font-semibold leading-none">신용</span>
                   </div>
                   <div class="text-gray-500 text-xs">{{ stock.ticker }}</div>
+                  <!-- 메모 -->
+                  <div class="mt-0.5 text-xs">
+                    <template v-if="stock._memos.length">
+                      <span class="text-green-500 font-bold mr-1">O</span>
+                      <span v-for="(m, i) in stock._memos" :key="i" class="text-gray-400">{{ i > 0 ? ' / ' : '' }}{{ m }}</span>
+                    </template>
+                    <span v-else class="text-gray-600">✕</span>
+                  </div>
                 </td>
                 <td class="text-center px-2 py-3">
                   <Sparkline v-if="sparklines[stock.ticker]?.length" :data="sparklines[stock.ticker]" :width="40" :height="18" />
@@ -277,15 +287,25 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="stock in krStocks" :key="stock.id"
+              <tr v-for="stock in groupedKrStocks" :key="stock.ticker + (stock.tradeType||'현금')"
                 class="border-b border-gray-700/50 hover:bg-gray-700/30 transition group">
-                <td class="px-4 py-3 cursor-pointer" @click="navigateTo(`/stock/${stock.id}`)">
+                <td class="px-4 py-3 cursor-pointer" @click="navigateTo(`/stock/${stock._stocks[0].id}`)">
                   <div class="font-medium hover:text-blue-400 transition text-sm flex items-center gap-1.5">
                     {{ stock.name }}
+                    <span v-if="stock._stocks.length > 1"
+                      class="text-[10px] px-1 py-0.5 bg-gray-600 text-gray-300 rounded font-semibold leading-none">×{{ stock._stocks.length }}</span>
                     <span v-if="stock.tradeType === '신용'"
                       class="text-[10px] px-1 py-0.5 bg-orange-500/20 text-orange-400 rounded font-semibold leading-none">신용</span>
                   </div>
                   <div class="text-gray-500 text-xs">{{ stock.ticker }}</div>
+                  <!-- 메모 -->
+                  <div class="mt-0.5 text-xs">
+                    <template v-if="stock._memos.length">
+                      <span class="text-green-500 font-bold mr-1">O</span>
+                      <span v-for="(m, i) in stock._memos" :key="i" class="text-gray-400">{{ i > 0 ? ' / ' : '' }}{{ m }}</span>
+                    </template>
+                    <span v-else class="text-gray-600">✕</span>
+                  </div>
                 </td>
                 <td class="text-center px-2 py-3">
                   <Sparkline v-if="sparklines[stock.ticker]?.length" :data="sparklines[stock.ticker]" :width="40" :height="18" />
@@ -374,9 +394,35 @@ const { data: stocks, pending, refresh } = await useFetch('/api/stocks', {
   headers: useRequestHeaders(['cookie']),
 })
 
-// 국장/미장 분리
+// 국장/미장 분리 (원본 flat)
 const usStocks = computed(() => (stocks.value || []).filter((s: any) => isUSD(s)))
 const krStocks = computed(() => (stocks.value || []).filter((s: any) => !isUSD(s)))
+
+// ticker + tradeType 기준으로 그룹화 (가중평균 단가, 합산 수량)
+function groupStocks(list: any[]) {
+  const map = new Map<string, any>()
+  for (const s of list) {
+    const key = `${s.ticker}__${s.tradeType || '현금'}`
+    if (!map.has(key)) {
+      map.set(key, {
+        ...s,
+        _stocks: [s],
+        _memos: s.memo ? [s.memo] : [],
+      })
+    } else {
+      const g = map.get(key)!
+      const totalQty = g.quantity + s.quantity
+      g.buyPrice = (g.buyPrice * g.quantity + s.buyPrice * s.quantity) / totalQty
+      g.quantity = totalQty
+      g._stocks.push(s)
+      if (s.memo) g._memos.push(s.memo)
+    }
+  }
+  return [...map.values()]
+}
+
+const groupedUsStocks = computed(() => groupStocks(usStocks.value))
+const groupedKrStocks = computed(() => groupStocks(krStocks.value))
 
 // 시세, 환율, 스파크라인
 const quotes = ref<Record<string, any>>({})
