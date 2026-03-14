@@ -83,8 +83,20 @@
             <option>NH투자증권</option>
             <option>Interactive Brokers</option>
           </datalist>
+          <!-- 현금/신용 토글 -->
+          <div class="flex items-center gap-1 bg-gray-700 rounded-lg p-1">
+            <button type="button"
+              v-for="t in ['현금', '신용']" :key="t"
+              @click="form.tradeType = t"
+              :class="form.tradeType === t
+                ? t === '신용' ? 'bg-orange-500 text-white' : 'bg-blue-600 text-white'
+                : 'text-gray-400 hover:text-white'"
+              class="flex-1 py-1 rounded-md text-xs font-medium transition">
+              {{ t }}
+            </button>
+          </div>
           <input v-model="form.memo" placeholder="메모 (선택)"
-            class="input-field col-span-2" />
+            class="input-field col-span-1" />
           <button type="submit" :disabled="adding || !form.ticker"
             class="col-span-2 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium text-sm transition disabled:opacity-50">
             {{ adding ? '추가 중...' : '+ 추가' }}
@@ -153,7 +165,11 @@
               <tr v-for="stock in usStocks" :key="stock.id"
                 class="border-b border-gray-700/50 hover:bg-gray-700/30 transition group">
                 <td class="px-4 py-3 cursor-pointer" @click="navigateTo(`/stock/${stock.id}`)">
-                  <div class="font-medium hover:text-blue-400 transition text-sm">{{ stock.name }}</div>
+                  <div class="font-medium hover:text-blue-400 transition text-sm flex items-center gap-1.5">
+                    {{ stock.name }}
+                    <span v-if="stock.tradeType === '신용'"
+                      class="text-[10px] px-1 py-0.5 bg-orange-500/20 text-orange-400 rounded font-semibold leading-none">신용</span>
+                  </div>
                   <div class="text-gray-500 text-xs">{{ stock.ticker }}</div>
                 </td>
                 <td class="text-center px-2 py-3">
@@ -264,7 +280,11 @@
               <tr v-for="stock in krStocks" :key="stock.id"
                 class="border-b border-gray-700/50 hover:bg-gray-700/30 transition group">
                 <td class="px-4 py-3 cursor-pointer" @click="navigateTo(`/stock/${stock.id}`)">
-                  <div class="font-medium hover:text-blue-400 transition text-sm">{{ stock.name }}</div>
+                  <div class="font-medium hover:text-blue-400 transition text-sm flex items-center gap-1.5">
+                    {{ stock.name }}
+                    <span v-if="stock.tradeType === '신용'"
+                      class="text-[10px] px-1 py-0.5 bg-orange-500/20 text-orange-400 rounded font-semibold leading-none">신용</span>
+                  </div>
                   <div class="text-gray-500 text-xs">{{ stock.ticker }}</div>
                 </td>
                 <td class="text-center px-2 py-3">
@@ -464,7 +484,7 @@ async function saveEdit(stock: any) {
 
 // 종목 추가
 const today = new Date().toISOString().slice(0, 10) // YYYY-MM-DD
-const form = reactive({ ticker: '', name: '', buyPrice: '', quantity: '', buyDate: today, platform: '', memo: '' })
+const form = reactive({ ticker: '', name: '', buyPrice: '', quantity: '', buyDate: today, platform: '', tradeType: '현금', memo: '' })
 
 async function onStockSelect(item: any) {
   form.ticker = item.ticker
@@ -493,7 +513,7 @@ async function addStock() {
       method: 'POST',
       body: { ...form, buyPrice: Number(form.buyPrice), quantity: Number(form.quantity) }
     })
-    Object.assign(form, { ticker: '', name: '', buyPrice: '', quantity: '', buyDate: '', platform: '', memo: '' })
+    Object.assign(form, { ticker: '', name: '', buyPrice: '', quantity: '', buyDate: today, platform: '', tradeType: '현금', memo: '' })
     await refresh()
   } catch (e) {
     addError.value = (e as any).data?.statusMessage || '추가 실패'

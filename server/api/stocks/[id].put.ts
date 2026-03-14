@@ -25,6 +25,7 @@ export default defineEventHandler(async (event) => {
       quantity: body.quantity ? Number(body.quantity) : existing.quantity,
       buyDate: body.buyDate ? new Date(body.buyDate) : existing.buyDate,
       platform: body.platform !== undefined ? body.platform : existing.platform,
+      tradeType: body.tradeType !== undefined ? body.tradeType : existing.tradeType,
       memo: body.memo !== undefined ? body.memo : existing.memo
     }
   })

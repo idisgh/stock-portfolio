@@ -61,6 +61,17 @@
             <span class="text-gray-400">매수일</span>
             <div class="font-mono mt-1">{{ new Date(stock.buyDate).toLocaleDateString('ko-KR') }}</div>
           </div>
+          <div>
+            <span class="text-gray-400">거래유형</span>
+            <div class="mt-1">
+              <span :class="(stock as any).tradeType === '신용'
+                ? 'bg-orange-500/20 text-orange-400'
+                : 'bg-blue-500/20 text-blue-400'"
+                class="text-xs px-2 py-0.5 rounded font-semibold">
+                {{ (stock as any).tradeType || '현금' }}
+              </span>
+            </div>
+          </div>
         </div>
         <div v-if="stock.memo" class="mt-3 text-gray-400 text-sm flex items-center gap-1">
           <StickyNote :size="14" /> {{ stock.memo }}

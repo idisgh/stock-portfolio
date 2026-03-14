@@ -38,6 +38,7 @@ model Stock {
   quantity  Int                       // 수량
   buyDate   DateTime                  // 매수일
   platform  String?                   // 매수 플랫폼 (키움, 토스, 미래에셋 등)
+  tradeType String?   @default("현금") // 거래 유형: 현금 | 신용
   memo      String?                   // 메모 (선택)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

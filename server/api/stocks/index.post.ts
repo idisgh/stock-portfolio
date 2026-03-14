@@ -19,6 +19,7 @@ export default defineEventHandler(async (event) => {
       quantity: Number(body.quantity),
       buyDate: body.buyDate ? new Date(body.buyDate) : new Date(),
       platform: body.platform || null,
+      tradeType: body.tradeType || '현금',
       memo: body.memo || null,
       userId: user.id  // 로그인한 유저!
     }
